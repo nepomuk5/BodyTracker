@@ -1,0 +1,31 @@
+# Android / Gradle
+.gradle/
+build/
+**/build/
+local.properties
+.idea/
+*.iml
+.cxx/
+.externalNativeBuild/
+captures/
+*.apk
+*.aab
+*.jks
+*.keystore
+
+# Python/tooling
+__pycache__/
+*.pyc
+.venv/
+
+# Local/private data
+*.db
+*.sqlite
+*.sqlite3
+private/
+backups/
+*.tracking.json
+
+# OS
+.DS_Store
+Thumbs.db
