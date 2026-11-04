@@ -7,5 +7,6 @@
 5. **P1 – Design-/Usability-Review im Emulator**: auf echtem gerenderten Android statt Illustrations-Mockups bewerten; Pixel Cutie überarbeiten.
 6. **P1 – Export/Import und Migration absichern**: Datenverlust ausschließen.
 7. **P2 – Monats-/Jahresstatistiken und Nies-Notizimport**.
+8. **P2 – Random Affirmations (Idee, Issue #8)**: Beim App-Start zufällige, positive, leicht freche Gen-Z-Botschaft und ein eigenes, unabhängig konfigurierbares Homescreen-Widget. Offline, optional, nicht modal; konkrete Texte, Häufigkeit und Darstellung später definieren.
 
 Für Änderungen jeweils kleiner Feature-Branch + Pull Request, CI und Review.
