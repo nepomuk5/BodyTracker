@@ -40,6 +40,9 @@ class MainActivity : Activity() {
     private val dateFormat = DateTimeFormatter.ofPattern("d. MMMM yyyy", locale)
     private val timeFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy · HH:mm", locale)
     private lateinit var content: LinearLayout
+    private var lastDeleted: LifeEntry? = null
+    private var previewWide = false
+    private var launchAffirmation = Affirmations.random()
 
     private fun dp(value: Int) = UiKit.dp(this, value)
     private fun lp() = LinearLayout.LayoutParams(-1, -2)
@@ -87,7 +90,7 @@ class MainActivity : Activity() {
         left.addView(UiKit.heading(this, title))
         if (subtitle != null) left.addView(UiKit.text(this, subtitle, 12f, muted = true))
         top.addView(left, LinearLayout.LayoutParams(0, -2, 1f))
-        top.addView(UiKit.icon(this, "cat", 38))
+        if (tab == 0) top.addView(UiKit.icon(this, "mascot", 48))
         content.addView(top)
         content.addView(UiKit.gap(this, 10))
     }
@@ -120,15 +123,27 @@ class MainActivity : Activity() {
     }
 
     private fun renderToday() {
-        title("✦ RANDOM LIFE STATS", "Little moments, big statistics ♡")
+        title("RANDOM LIFE STATS", "Little moments, big statistics ♡")
         val headline = UiKit.box(this, vertical = false, fill = "#FFF7FB")
         headline.gravity = Gravity.CENTER_VERTICAL
         val left = UiKit.box(this, pad = 0)
-        left.addView(UiKit.text(this, "✦ HEUTE", 18f, true, pixel = true))
+        left.addView(UiKit.text(this, "HEUTE", 18f, true, pixel = true))
         left.addView(UiKit.text(this, LocalDate.now().format(dateFormat), 12f, muted = true))
         headline.addView(left, LinearLayout.LayoutParams(0, -2, 1f))
-        headline.addView(UiKit.icon(this, "cat", 43))
+        // Single mascot in the header; no duplicate illustration here.
         content.addView(headline)
+        content.addView(UiKit.gap(this, 10))
+        val pepCard = UiKit.box(this, vertical = false, pad = 10, fill = "#FFE1F0")
+        pepCard.gravity = Gravity.CENTER_VERTICAL
+        val pepCopy = UiKit.box(this, pad = 0)
+        pepCopy.addView(UiKit.text(this, "TINY PEP TALK ♡", 10f, true, muted = true, pixel = true))
+        pepCopy.addView(UiKit.text(this, launchAffirmation, 13f, true))
+        pepCard.addView(pepCopy, LinearLayout.LayoutParams(0, -2, 1f))
+        pepCard.addView(UiKit.button(this, "↻", {
+            launchAffirmation = Affirmations.random()
+            draw()
+        }, filled = false))
+        content.addView(pepCard)
         content.addView(UiKit.gap(this, 12))
         val trackers = db.trackers()
         val counts = db.countForDay(LocalDate.now().toString())
@@ -164,12 +179,8 @@ class MainActivity : Activity() {
             }
             content.addView(grid)
         }
-        section("✦ HEUTIGE EINTRÄGE")
+        section("HEUTIGE EINTRÄGE")
         renderEntryList(LocalDate.now())
-        content.addView(UiKit.gap(this, 12))
-        content.addView(UiKit.button(this, "+ EINTRAG NACHTRAGEN", { openAddForDay(LocalDate.now()) }))
-        content.addView(UiKit.gap(this, 15))
-        content.addView(UiKit.text(this, "Jeder Klick = ein Ereignis. Die tatsächliche Uhrzeit bleibt zunächst unbekannt; die Erfassungszeit wird automatisch gespeichert.", 12f, muted = true))
     }
 
     private fun log(id: Long, day: LocalDate = LocalDate.now()) {
@@ -183,6 +194,23 @@ class MainActivity : Activity() {
     }
 
     private fun renderEntryList(day: LocalDate) {
+        lastDeleted?.let { removed ->
+            val undo = UiKit.box(this, vertical = false, pad = 8, fill = "#FFE1F0")
+            undo.gravity = Gravity.CENTER_VERTICAL
+            undo.addView(UiKit.text(this, "Eintrag entfernt", 12f, true),
+                LinearLayout.LayoutParams(0, -2, 1f))
+            undo.addView(UiKit.button(this, "↶ RÜCKGÄNGIG", {
+                try {
+                    db.restoreEvent(removed)
+                    lastDeleted = null
+                    LifeWidgetProvider.updateAll(this)
+                    draw()
+                } catch (_: Exception) {
+                    Toast.makeText(this, "Wiederherstellen fehlgeschlagen", Toast.LENGTH_LONG).show()
+                }
+            }, filled = false))
+            content.addView(undo, UiKit.margin(this, bottom = 8))
+        }
         val entries = db.events(day.toString())
         val trackers = db.trackers(true).associateBy { it.id }
         if (entries.isEmpty()) {
@@ -204,6 +232,15 @@ class MainActivity : Activity() {
                 "Erfasst: ${formatRecorded(e.recordedAt)}", 10f, muted = true))
             row.addView(info, LinearLayout.LayoutParams(0, -2, 1f).apply { marginStart = dp(9) })
             row.addView(UiKit.text(this, "✎", 18f, true, muted = true))
+            val remove = UiKit.button(this, "−", {
+                db.deleteEvent(e.id)
+                lastDeleted = e
+                LifeWidgetProvider.updateAll(this)
+                draw()
+            }, filled = false)
+            remove.contentDescription = "${t.name} Eintrag entfernen"
+            remove.setPadding(dp(10), dp(4), dp(10), dp(4))
+            row.addView(remove, LinearLayout.LayoutParams(-2, -2).apply { marginStart = dp(10) })
             row.setOnClickListener { editEntry(e, t) }
             content.addView(row, UiKit.margin(this, bottom = 6))
         }
