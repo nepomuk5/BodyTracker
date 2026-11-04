@@ -299,7 +299,11 @@ class MainActivity : Activity() {
         section(chosenDay.format(dateFormat))
         renderEntryList(chosenDay)
         content.addView(UiKit.gap(this, 10))
-        content.addView(UiKit.button(this, "+ AN DIESEM TAG NACHTRAGEN", { openAddForDay(chosenDay) }))
+        if (!chosenDay.isAfter(LocalDate.now())) {
+            content.addView(UiKit.button(this, "+ EINTRAG FÜR DIESEN TAG", { openAddForDay(chosenDay) }))
+        } else {
+            content.addView(UiKit.text(this, "Für zukünftige Tage kannst du noch keine Ereignisse erfassen.", 12f, muted = true))
+        }
         content.addView(UiKit.gap(this, 12))
         content.addView(UiKit.button(this, "↗ ZU EINEM DATUM SPRINGEN", {
             pickDate(chosenDay) { day -> chosenDay = day; month = YearMonth.from(day); draw() }
@@ -307,7 +311,7 @@ class MainActivity : Activity() {
     }
 
     private fun renderTrackers() {
-        title("♡ TRACKER ♡", "Deine kleine Pixel-Sammlung")
+        title("♡ TRACKER ♡", "Deine persönliche Sammlung")
         val all = db.trackers(true)
         val grid = GridLayout(this).apply { columnCount = 3 }
         all.forEachIndexed { index, t ->
@@ -339,20 +343,33 @@ class MainActivity : Activity() {
 
     private fun renderStudio() {
         title("♡ WIDGET STUDIO", "Pink Pixel Power auf deinem Homescreen")
-        val preview = UiKit.box(this, fill = "#FFD4E9", pad = 14)
-        val line = UiKit.box(this, vertical = false, pad = 0)
-        db.trackers().take(4).forEach { t ->
+        content.addView(UiKit.button(this,
+            if (previewWide) "2×2-VORSCHAU" else "4×1-VORSCHAU", {
+                previewWide = !previewWide
+                draw()
+            }, filled = false))
+        content.addView(UiKit.gap(this, 7))
+        val preview = UiKit.box(this, fill = "#FFD4E9", pad = 9)
+        val columns = if (previewWide) 4 else 2
+        val previewGrid = GridLayout(this).apply { columnCount = columns }
+        db.trackers().take(4).forEachIndexed { index, t ->
             val tile = UiKit.box(this, pad = 4, fill = "#FFF0F8")
             tile.gravity = Gravity.CENTER
-            tile.addView(UiKit.icon(this, t.icon, 52))
-            line.addView(tile, LinearLayout.LayoutParams(0, dp(92), 1f).apply {
+            tile.addView(UiKit.icon(this, t.icon, if (previewWide) 42 else 48))
+            val number = UiKit.text(this, "0", 11f, true, pixel = true)
+            number.gravity = Gravity.CENTER
+            tile.addView(number)
+            previewGrid.addView(tile, GridLayout.LayoutParams(
+                GridLayout.spec(index / columns), GridLayout.spec(index % columns, 1f)
+            ).apply {
+                width = 0; height = dp(if (previewWide) 80 else 90)
                 setMargins(dp(2), dp(2), dp(2), dp(2))
             })
         }
-        preview.addView(line)
+        preview.addView(previewGrid)
         content.addView(preview)
         content.addView(UiKit.gap(this, 12))
-        content.addView(UiKit.text(this, "Echte Homescreen-Widgets: antippen → automatisch speichern. Kein Öffnen der App, kein Dialog.", 13f))
+        content.addView(UiKit.text(this, "Die Vorschau ist schematisch. Die tatsächliche Größe legst du auf dem Android-Homescreen fest.", 12f, muted = true))
         section("WIDGETS AUF DEINEM HANDY")
         val manager = AppWidgetManager.getInstance(this)
         val ids = manager.getAppWidgetIds(ComponentName(this, LifeWidgetProvider::class.java))
@@ -385,10 +402,26 @@ class MainActivity : Activity() {
             }
         }))
         content.addView(UiKit.gap(this, 12))
-        content.addView(UiKit.text(this, "Widgets sind unabhängig voneinander. Du kannst Tracker-Reihenfolge, Beschriftung, Tageszähler und Rosa/Lila/Creme für jedes Widget separat einstellen. Die Größe passt du auf dem Homescreen an.", 12f, muted = true))
+        content.addView(UiKit.gap(this, 10))
+        section("DAILY PEP TALK")
+        content.addView(UiKit.text(this, "Ein eigenes Widget mit kleinen positiven Sprüchen – tippe darauf, um zu wechseln.", 12f, muted = true))
+        content.addView(UiKit.gap(this, 8))
+        content.addView(UiKit.button(this, "+ AFFIRMATIONS-WIDGET", {
+            val component = ComponentName(this, AffirmationWidgetProvider::class.java)
+            if (!manager.isRequestPinAppWidgetSupported ||
+                !manager.requestPinAppWidget(component, null, null)) {
+                Toast.makeText(this, "Homescreen gedrückt halten → Widgets → Daily Pep Talk", Toast.LENGTH_LONG).show()
+            }
+        }))
+        content.addView(UiKit.gap(this, 10))
+        content.addView(UiKit.text(this, "Tracker-Widgets sind unabhängig. Farben, Beschriftungen und Zähler kannst du einzeln einstellen.", 12f, muted = true))
     }
 
     private fun openAddForDay(day: LocalDate) {
+        if (day.isAfter(LocalDate.now())) {
+            Toast.makeText(this, "Für zukünftige Tage ist kein Nachtrag möglich.", Toast.LENGTH_SHORT).show()
+            return
+        }
         val ts = db.trackers()
         if (ts.isEmpty()) {
             Toast.makeText(this, "Erstelle zunächst einen Tracker.", Toast.LENGTH_SHORT).show(); return
@@ -399,8 +432,10 @@ class MainActivity : Activity() {
     }
 
     private fun pickDate(current: LocalDate, callback: (LocalDate) -> Unit) {
-        DatePickerDialog(this, { _, y, m, d -> callback(LocalDate.of(y, m + 1, d)) },
-            current.year, current.monthValue - 1, current.dayOfMonth).show()
+        val picker = DatePickerDialog(this, { _, y, m, d -> callback(LocalDate.of(y, m + 1, d)) },
+            current.year, current.monthValue - 1, current.dayOfMonth)
+        picker.datePicker.maxDate = System.currentTimeMillis()
+        picker.show()
     }
 
     private fun editEntry(entry: LifeEntry, tracker: LifeTracker) {
