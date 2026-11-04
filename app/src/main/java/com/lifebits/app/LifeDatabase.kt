@@ -126,6 +126,17 @@ class LifeDatabase(context: Context) : SQLiteOpenHelper(context.applicationConte
         }, "id=?", arrayOf(id.toString()))
     }
 
+    /** Restore the original row for quick-delete undo, preserving recordedAt. */
+    @Synchronized fun restoreEvent(entry: LifeEntry) {
+        writableDatabase.insertOrThrow("events", null, ContentValues().apply {
+            put("id", entry.id)
+            put("tracker_id", entry.trackerId)
+            put("event_date", entry.eventDate)
+            if (entry.eventTime == null) putNull("event_time") else put("event_time", entry.eventTime)
+            put("recorded_at", entry.recordedAt)
+        })
+    }
+
     @Synchronized fun deleteEvent(id: Long) {
         writableDatabase.delete("events", "id=?", arrayOf(id.toString()))
     }
