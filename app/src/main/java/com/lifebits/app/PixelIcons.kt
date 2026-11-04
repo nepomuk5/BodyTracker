@@ -2,13 +2,13 @@ package com.lifebits.app
 
 object PixelIcons {
     val available = linkedMapOf(
-        "sneeze" to R.drawable.pixel_sneeze,
-        "poop" to R.drawable.pixel_poop,
-        "migraine" to R.drawable.pixel_migraine,
-        "vomit" to R.drawable.pixel_vomit,
-        "hiccup" to R.drawable.pixel_hiccup,
-        "throat" to R.drawable.pixel_throat,
-        "alcohol" to R.drawable.pixel_alcohol,
+        "sneeze" to R.drawable.soft_sneeze,
+        "poop" to R.drawable.soft_poop,
+        "migraine" to R.drawable.soft_migraine,
+        "vomit" to R.drawable.soft_vomit,
+        "hiccup" to R.drawable.soft_hiccup,
+        "throat" to R.drawable.soft_throat,
+        "alcohol" to R.drawable.soft_alcohol,
         "yawn" to R.drawable.pixel_yawn,
         "cloud" to R.drawable.pixel_cloud,
         "tear" to R.drawable.pixel_tear,
