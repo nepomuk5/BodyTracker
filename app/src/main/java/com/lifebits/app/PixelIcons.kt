@@ -21,7 +21,8 @@ object PixelIcons {
         "coffee" to R.drawable.pixel_coffee,
         "clover" to R.drawable.pixel_clover,
         "pill" to R.drawable.pixel_pill,
-        "cat" to R.drawable.pixel_cat
+        "cat" to R.drawable.pixel_cat,
+        "mascot" to R.drawable.soft_mascot
     )
     fun resource(key: String): Int = available[key] ?: R.drawable.pixel_heart
 }

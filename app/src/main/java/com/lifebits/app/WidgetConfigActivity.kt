@@ -46,7 +46,7 @@ class WidgetConfigActivity : Activity() {
         page.addView(UiKit.heading(this, "♡ WIDGET STUDIO ♡"))
         page.addView(UiKit.text(this, "Jedes Widget bekommt seine eigenen Buttons und Einstellungen.", 13f, muted = true))
         page.addView(UiKit.gap(this, 16))
-        page.addView(UiKit.text(this, "DEINE PIXEL-BUTTONS", 16f, true, pixel = true))
+        page.addView(UiKit.text(this, "DEINE TRACKER-BUTTONS", 16f, true, pixel = true))
         page.addView(UiKit.gap(this, 6))
 
         val trackers = db.trackers().sortedWith(compareBy<LifeTracker> { if (it.id in selected) selected.indexOf(it.id) else Int.MAX_VALUE }.thenBy { it.sortOrder })
@@ -78,7 +78,7 @@ class WidgetConfigActivity : Activity() {
             }
             page.addView(row, UiKit.margin(this, bottom = 7))
         }
-        page.addView(UiKit.text(this, "Die Anzahl sichtbarer Buttons hängt von der Widget-Größe ab. Nicht sichtbare Tracker bleiben ausgewählt.", 12f, muted = true))
+        page.addView(UiKit.text(this, "Die Widget-Größe passt du später auf dem Android-Homescreen an (lange drücken → Größe ändern). Nicht sichtbare Tracker bleiben ausgewählt.", 12f, muted = true))
         page.addView(UiKit.gap(this, 16))
         page.addView(UiKit.text(this, "DARSTELLUNG", 16f, true, pixel = true))
         fun toggle(label: String, value: Boolean, onChange: (Boolean) -> Unit) {
