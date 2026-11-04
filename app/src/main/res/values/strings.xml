@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Random Life Stats</string>
+    <string name="widget_name">Life Bits · Pixel Tracker</string>
+    <string name="widget_desc">Diskrete Pixel-Buttons zum Erfassen mit einem Tipp</string>
+</resources>
