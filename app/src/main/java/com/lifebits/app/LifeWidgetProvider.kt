@@ -109,8 +109,11 @@ class LifeWidgetProvider : AppWidgetProvider() {
             val options = manager.getAppWidgetOptions(widgetId)
             val width = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 110)
             val height = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 110)
-            val cols = if (width >= 215) 4 else 2
-            val rows = if (height >= 215) 4 else 2
+            // The wide 4x1 widget is a compact toolbar, NOT a stretched 2x2 grid.
+            // Android reports widget sizes in approximate dp through options.
+            val wide = width >= 215 && height < 190
+            val cols = if (wide || width >= 300) 4 else 2
+            val rows = if (wide) 1 else if (height >= 215) 4 else 2
             val choices = cfg.selected.mapNotNull { sid -> all.find { it.id == sid && it.active } }
                 .take(cols * rows)
             val counts = db.countForDay(LocalDate.now().toString())
@@ -120,9 +123,12 @@ class LifeWidgetProvider : AppWidgetProvider() {
                 "cream" -> R.layout.widget_root_cream
                 else -> R.layout.widget_root
             }
-            val tileLayout = when (style) {
-                "lilac" -> R.layout.widget_tile_lilac
-                "cream" -> R.layout.widget_tile_cream
+            val tileLayout = when {
+                wide && style == "lilac" -> R.layout.widget_tile_wide_lilac
+                wide && style == "cream" -> R.layout.widget_tile_wide_cream
+                wide -> R.layout.widget_tile_wide
+                style == "lilac" -> R.layout.widget_tile_lilac
+                style == "cream" -> R.layout.widget_tile_cream
                 else -> R.layout.widget_tile
             }
             val remote = RemoteViews(context.packageName, rootLayout)
