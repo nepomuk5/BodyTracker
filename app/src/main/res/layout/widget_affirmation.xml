@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/affirmation_card"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="14dp"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:background="@drawable/widget_bg_pink">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="♡ DAILY PEP TALK ♡"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.06"
+        android:textColor="#A44781" />
+    <TextView
+        android:id="@+id/affirmation_text"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="tiny wins are still wins ♡"
+        android:textColor="#61234E"
+        android:textStyle="bold"
+        android:textSize="17sp"
+        android:maxLines="3" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="↻  tap for another ♡"
+        android:textColor="#9B6084"
+        android:textSize="10sp" />
+</LinearLayout>
