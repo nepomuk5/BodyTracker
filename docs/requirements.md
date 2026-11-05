@@ -1,6 +1,6 @@
 # Produktspezifikation — Random Life Stats
 
-**Stand:** 05.11.2026 · **Prototyp:** 0.4.1-dev (Icon-Feature-Branch; Samsung-Test offen) (auf main; Widget und Statistik-Grundansicht auf Samsung erprobt) · **Zielplattform:** Android (native Kotlin-App, minSdk 26)
+**Stand:** 05.11.2026 · **Prototyp:** 0.4.2-dev (Backup-Feature-Branch; Icon-Set und Statistik auf Samsung erprobt) · **Zielplattform:** Android (native Kotlin-App, minSdk 26)
 
 Dieses Dokument ist die **verbindliche fachliche Spezifikation**. Der Status unterscheidet Implementierung von tatsächlicher Abnahme. Ein erfolgreicher CI-Build ersetzt keinen Widget-/Gerätetest.
 
@@ -27,7 +27,7 @@ Unkompliziert und diskret erfassen, **an welchem Tag und wie häufig** kleine, u
 | RLS-004 | Tatsächliche Ereignisuhrzeit zunächst NULL | Implementiert | Auch Widget-/Nachtrags-Flow gezielt prüfen |
 | RLS-005 | Automatischer `recorded_at` separat und unverändert | Implementiert | Auch Undo, Backup-Roundtrip prüfen |
 | RLS-006 | Exakt sieben Starter | Implementiert | Niesen, Kacka, Migräne, Kotzen, Schluckauf, Halsschmerzen, Alkohol |
-| RLS-007 | Tracker erstellen, bearbeiten und archivieren | Funktional implementiert; UX nicht final | Zusätzliche Icons sind noch alte Pixelgrafiken |
+| RLS-007 | Tracker erstellen, bearbeiten und archivieren | 20 Soft Emoji Cutie Icons auf Samsung getestet | Weitere Detail-/Archivtests offen |
 | RLS-008 | Mehrere unabhängige Tracker-Widgets | Implementiert, Emulator erprobt | Zwei Instanzen/Neustart auf echtem Gerät prüfen |
 | RLS-009 | Diskretes Widget, Label/Zähler/Theme optional | Implementiert | Rosa/Lila/Creme, 4×1 und 2×2 prüfen |
 | RLS-010 | Offline & lokale Datenpersistenz | Implementiert | Neustart/Update/Backup im Gerätetest |
@@ -38,8 +38,8 @@ Unkompliziert und diskret erfassen, **an welchem Tag und wie häufig** kleine, u
 | RLS-015 | Breites kompaktes 4×1-Widget | Implementiert, Emulator bestätigt | 1-Zeilen-Größe durch Nutzerin im Launcher bestätigt |
 | RLS-016 | Direkte Löschaktion in Eventliste mit Undo | Implementiert | Ursprungsdaten inklusive `recorded_at` wiederherstellen |
 | RLS-017 | Zukünftige Ereignistage verhindern | Implementiert | Navigation darf Zukunft zeigen, Erfassung dort gesperrt |
-| RLS-018 | JSON-Backup exportieren/importieren | Implementiert, **noch nicht abgenommen** | Gültiges Backup, Abbruch, defekte Datei, vollständiger Restore |
-| RLS-019 | Einheitliche zusätzliche Soft-Emoji-Cutie-Icons für eigene Tracker | Im Feature-Branch implementiert, **Gerätetest offen** | 13 freigegebene Motive; gespeicherte Icon-Keys, Picker und Widget testen |
+| RLS-018 | JSON-Backup exportieren/importieren | Sichere Vorschau, Abbruch und Export-Prüfung im Feature-Branch; **noch nicht abgenommen** | Isolierte Emulator-Restore-Tests und Samsung-Export/Abbruch; siehe docs/BACKUP_TESTS.md |
+| RLS-019 | Einheitliche zusätzliche Soft-Emoji-Cutie-Icons für eigene Tracker | **Erledigt und auf Samsung bestätigt** | PR #14 gemergt; 13 neue Motive und 7 Starter, unveränderte Icon-Keys |
 | RLS-020 | Monats- und Jahresübersichten / Statistiken | Grundansicht auf Samsung bestätigt | Detailtests zu historischen/archivierten Daten und spätere Heatmap offen |
 | RLS-021 | Import historischer Nies-Textnotizen | Geplant | Prüfen ohne bestehende Daten zu überschreiben |
 | RLS-022 | Diskretes Undo direkt aus Tracker-Widget | Offene UX-Frage | Keine Konflikte mit Tap/Long-Press des Launchers |
@@ -49,7 +49,7 @@ Unkompliziert und diskret erfassen, **an welchem Tag und wie häufig** kleine, u
 
 - **Heute:** Tageszähler, One-Tap-Buttons, Liste des Tages, Bearbeiten und Löschen; Pep Talk ohne erzwungenen Dialog.
 - **Verlauf:** Kalender vor/zurück, Tag wählen, historische Einträge ansehen und nachtragen; Zukunftseinträge nicht möglich.
-- **Tracker:** Aktivieren, bearbeiten, archivieren und eigene Tracker anlegen. **Custom-Icons im Soft Emoji Cutie-Stil umgesetzt**, noch nicht auf Samsung überprüft.
+- **Tracker:** Aktivieren, bearbeiten, archivieren und eigene Tracker anlegen. **20 Soft Emoji Cutie-Icons auf Samsung bestätigt**, bestehende Icon-Keys unverändert.
 - **Widget Studio:** Instanzen konfigurieren, Reihenfolge, Texte, Zähler, Farbe; tatsächliche Größe im Android-Launcher.
 - **Affirmations:** Optionales, separat hinzufügbares Widget; keine Trackingdaten erforderlich.
 

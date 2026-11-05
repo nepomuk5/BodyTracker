@@ -1,6 +1,6 @@
 # Android testen — Emulator und echtes Smartphone
 
-**Stand 05.11.2026:** Android Studio/Gradle-Build und Emulator mit Tracker- und Affirmations-Widgets sind bereits erfolgreich getestet. Die App wurde auf einem echten Samsung installiert; **grundlegende Funktionen und Widgets** funktionieren. Ein vollständiger Gerätetest und das kompakte Affirmations-Widget sind noch offen.
+**Stand 05.11.2026:** Android Studio/Gradle-Build und Emulator mit Tracker- und Affirmations-Widgets sind bereits erfolgreich getestet. Die App wurde auf einem echten Samsung installiert; **grundlegende Funktionen und Widgets** funktionieren. Ein vollständiger Gerätetest bleibt offen; das kompakte Affirmations-Widget, die Statistik-Grundansicht und alle 20 Tracker-Icons wurden auf Samsung bestätigt.
 
 ## Voraussetzungen
 
@@ -29,7 +29,7 @@ Die Debug-APK liegt in `app/build/outputs/apk/debug/app-debug.apk`. Die GitHub-A
 7. Separates Pep-Talk-Widget hinzufügen und per Tap Spruch wechseln.
 8. Emulator und App neu starten; Einträge und Widget-Konfiguration kontrollieren.
 
-## Auf dem Samsung-Gerät testen (noch offen)
+## Auf dem Samsung-Gerät testen (weitere Regression offen)
 
 1. Auf dem Smartphone **Entwickleroptionen → USB-Debugging** aktivieren. Beim Anschließen der Debug-Freigabe auf dem Gerät zustimmen.
 2. Handy per USB verbinden. Terminal im Repository öffnen:
@@ -52,3 +52,13 @@ Die Debug-APK liegt in `app/build/outputs/apk/debug/app-debug.apk`. Die GitHub-A
 4. Auf 2 Zeilen Höhe vergrößern: vollständiger Pep-Talk-Kartenaufbau mit Überschrift/Hinweis. Nach Rückverkleinern wieder kompakt.
 5. In **Verlauf → Monats- & Jahresstats** ein Jahr auswählen, verschiedene Monate antippen, Gesamtzahlen und Tracker-Summen mit Testeinträgen vergleichen. Auch archivierte Tracker mit alten Ereignissen prüfen.
 6. Offline-/Neustart-/Update-Test, Widget-Refresh und Backup weiterhin separat prüfen; **keine produktiven echten Daten importieren, bevor Export/Restore abgesichert ist**.
+
+## v0.4.2-dev – Backup ohne Datenrisiko testen
+
+Die ausführliche Checkliste steht in `docs/BACKUP_TESTS.md`. Auf dem Samsung zunächst **nur Export, Datei-Vorschau und Abbruch** prüfen. Destruktive Restore-/Rollback-Tests ausschließlich in einer isolierten Emulator-Datenbank.
+
+```powershell
+.\gradlew.bat :app:connectedDebugAndroidTest
+```
+
+Die Instrumentierungstests verwenden **eine eigene SQLite-Datei**. Das GitHub-CI kompiliert die Test-APK, führt den Gerätetest aber nicht aus.
