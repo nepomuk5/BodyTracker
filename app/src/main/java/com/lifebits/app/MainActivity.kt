@@ -770,10 +770,17 @@ class MainActivity : Activity() {
             try {
                 val raw = db.exportJson()
                 val info = db.inspectBackup(raw)
+                require(raw.toByteArray(Charsets.UTF_8).size <= 15_000_000) {
+                    "Backup ist zu groß (max. 15 MB)"
+                }
                 contentResolver.openOutputStream(uri, "wt")?.use { output ->
                     output.write(raw.toByteArray(Charsets.UTF_8))
                     output.flush()
                 } ?: error("Datei konnte nicht geöffnet werden")
+                // Verify that the selected document provider actually persisted our data.
+                require(readBackupText(uri) == raw) {
+                    "Die gespeicherte Datei konnte nicht vollständig überprüft werden."
+                }
                 Toast.makeText(this,
                     "Backup gespeichert: ${info.trackerCount} Tracker, ${info.eventCount} Einträge ♡",
                     Toast.LENGTH_LONG).show()
