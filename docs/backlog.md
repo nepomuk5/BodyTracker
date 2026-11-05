@@ -5,7 +5,7 @@
 ## Jetzt — stabiler Projektstand + echter Gerätetest
 
 1. **Erledigt — `main` konsolidiert:** PR #10 hat den Android-Prototypen, die Designänderungen und Dokumentation als einen gemeinsamen Stand integriert. Die veralteten PRs #1 und #9 sind als abgelöst geschlossen. Aktueller Entwicklungsstand: **v0.3.1-dev**; der `main`-CI-Build ist erfolgreich.
-2. **P0 — Android-Gerät testen (#12):** Debug-APK auf Samsung installieren, 4×1 und 2×2 Widget inkl. Tageswechsel/One-Tap, Daten nach App-Update, Offline und Pep Talk prüfen. Die Grundfunktionen und beide Widgets laufen inzwischen auf einem echten Samsung; **vollständige** Checkliste und der Ein-Zeilen-Test des Pep-Talk-Widgets sind offen.
+2. **P0 — Android-Gerät testen (#12):** Debug-APK auf Samsung installieren, 4×1 und 2×2 Widget inkl. Tageswechsel/One-Tap, Daten nach App-Update, Offline und Pep Talk prüfen. Die Grundfunktionen und beide Widgets laufen inzwischen auf einem echten Samsung; **vollständige** Checkliste bleibt offen; die verkleinerbare Pep-Talk-Variante ist auf Samsung bestätigt.
 3. **P0 — Daten schützen:** Export und Import als echten Roundtrip testen (inkl. Abbruch/defekter Datei), **#6**. Alte persönliche Tracker-Daten niemals für den Test löschen.
 
 ## Danach — Design und Usability
@@ -16,7 +16,7 @@
 
 ## Später
 
-7. **P2 — Monats- und Jahresstatistiken:** Erste lokale Monats-/Jahresübersicht ist in v0.4.0-dev umgesetzt; Emulator-/Samsung-Abnahme und spätere Heatmaps sind offen.
+7. **P2 — Monats- und Jahresstatistiken:** Erste lokale Monats-/Jahresübersicht in v0.4.0-dev umgesetzt und von der Nutzerin auf Samsung positiv bewertet; detaillierte Zahlenprüfung und spätere Heatmaps bleiben offen.
 8. **P2 — Import der bisherigen Nies-Textnotizen:** sauberer Migrationsdialog mit Vorschau, ohne Doppelzählung.
 9. **P2 — Weitere Kawaii-Spielereien:** optionaler Katzen-Mascot, weitere Pep-Talk-Stile, erst nach Stabilisierung.
 
