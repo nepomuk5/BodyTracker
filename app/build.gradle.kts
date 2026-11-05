@@ -11,8 +11,8 @@ android {
         applicationId = "com.lifebits.app"
         minSdk = 26
         targetSdk = 34
-        versionCode = 4
-        versionName = "0.3.1-dev"
+        versionCode = 5
+        versionName = "0.4.0-dev"
     }
 
     compileOptions {

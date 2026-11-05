@@ -1,6 +1,6 @@
 # Android testen — Emulator und echtes Smartphone
 
-**Stand 05.11.2026:** Android Studio/Gradle-Build und Emulator mit Tracker- und Affirmations-Widgets sind bereits erfolgreich getestet. Das **echte Smartphone steht noch aus**.
+**Stand 05.11.2026:** Android Studio/Gradle-Build und Emulator mit Tracker- und Affirmations-Widgets sind bereits erfolgreich getestet. Die App wurde auf einem echten Samsung installiert; **grundlegende Funktionen und Widgets** funktionieren. Ein vollständiger Gerätetest und das kompakte Affirmations-Widget sind noch offen.
 
 ## Voraussetzungen
 
@@ -43,3 +43,12 @@ Die Debug-APK liegt in `app/build/outputs/apk/debug/app-debug.apk`. Die GitHub-A
 6. JSON-Backup/Import mit **ausschließlich Testdaten** in sicherer Umgebung prüfen. Import ersetzt vorhandene Events und Tracker; nicht ohne Sicherung auf echten Daten testen.
 
 **Wichtig:** `adb install -r` aktualisiert dieselbe App bei kompatibler Signatur normalerweise unter Beibehaltung der lokalen Daten. Ein Deinstallieren löscht dagegen App-Daten. Die Debug-APK ist keine allgemein veröffentlichungsfertige Release-Version.
+
+## v0.4.0-dev – gezielte Zusatztests (Samsung One UI)
+
+1. App über vorhandene APK aktualisieren (`adb install -r`; nicht vorher deinstallieren).
+2. Das **bereits platzierte Affirmations-Widget** ggf. vom Homescreen entfernen und neu hinzufügen: Standard sollte **3×1** sein. Bestehende Tracker-/Event-Daten werden dadurch nicht gelöscht.
+3. Auf 1 Zelle Höhe ziehen, ggf. in der Breite auf 2–3 Zellen verkleinern: in der kompakten Ansicht **nur der Affirmationstext**, kein abgeschnittener Header/Footer. Tippen muss Spruch wechseln.
+4. Auf 2 Zeilen Höhe vergrößern: vollständiger Pep-Talk-Kartenaufbau mit Überschrift/Hinweis. Nach Rückverkleinern wieder kompakt.
+5. In **Verlauf → Monats- & Jahresstats** ein Jahr auswählen, verschiedene Monate antippen, Gesamtzahlen und Tracker-Summen mit Testeinträgen vergleichen. Auch archivierte Tracker mit alten Ereignissen prüfen.
+6. Offline-/Neustart-/Update-Test, Widget-Refresh und Backup weiterhin separat prüfen; **keine produktiven echten Daten importieren, bevor Export/Restore abgesichert ist**.
