@@ -59,7 +59,14 @@ class AffirmationWidgetProvider : AppWidgetProvider() {
             }
             prefs.edit().putString("day_$id", today).putInt("index_$id", index).apply()
 
-            val views = RemoteViews(context.packageName, R.layout.widget_affirmation)
+            // Android launchers (especially Samsung One UI) report sizes in dp.
+            // A 1-row widget needs its own compact text-only layout, otherwise the
+            // original header/body/footer stack cannot fit and gets clipped.
+            val options = manager.getAppWidgetOptions(id)
+            val heightDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 60)
+            val compact = heightDp < 100
+            val views = RemoteViews(context.packageName,
+                if (compact) R.layout.widget_affirmation_compact else R.layout.widget_affirmation)
             views.setTextViewText(R.id.affirmation_text, Affirmations.messages[index])
             val intent = Intent(context, AffirmationWidgetProvider::class.java).apply {
                 action = ACTION_NEXT

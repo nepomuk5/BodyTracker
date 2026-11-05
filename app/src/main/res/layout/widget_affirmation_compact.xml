@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/affirmation_card"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingHorizontal="12dp"
+    android:paddingVertical="5dp"
+    android:gravity="center"
+    android:background="@drawable/widget_bg_pink">
+    <TextView
+        android:id="@+id/affirmation_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:includeFontPadding="false"
+        android:text="tiny wins are still wins ♡"
+        android:textColor="#61234E"
+        android:textStyle="bold"
+        android:textSize="14sp" />
+</LinearLayout>
