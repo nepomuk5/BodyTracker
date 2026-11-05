@@ -716,14 +716,14 @@ class MainActivity : Activity() {
             val currentTrackerCount = db.trackers(true).size
             val currentEventCount = db.eventCount()
             val dateInfo = if (summary.earliestDate != null) {
-                "\\nZeitraum: ${summary.earliestDate} bis ${summary.latestDate}"
+                "\nZeitraum: ${summary.earliestDate} bis ${summary.latestDate}"
             } else ""
             val message =
-                "AUSGEWÄHLTE SICHERUNG\\n" +
+                "AUSGEWÄHLTE SICHERUNG\n" +
                 "${summary.trackerCount} Tracker · ${summary.eventCount} Ereignisse" +
-                dateInfo + "\\n\\n" +
-                "AKTUELL AUF DIESEM HANDY\\n" +
-                "$currentTrackerCount Tracker · $currentEventCount Ereignisse\\n\\n" +
+                dateInfo + "\n\n" +
+                "AKTUELL AUF DIESEM HANDY\n" +
+                "$currentTrackerCount Tracker · $currentEventCount Ereignisse\n\n" +
                 "ACHTUNG: Wiederherstellen ERSETZT alle aktuellen Tracker und " +
                 "Einträge. Widget-Einstellungen sind nicht Teil der JSON-Datei. " +
                 "Bitte nur mit einer zuvor geprüften Sicherung fortfahren."
@@ -751,7 +751,7 @@ class MainActivity : Activity() {
         } catch (e: Exception) {
             AlertDialog.Builder(this)
                 .setTitle("Backup nicht verwendbar")
-                .setMessage("${e.message ?: "Die Datei ist beschädigt oder ungültig."}\\n\\nDeine Daten wurden nicht verändert.")
+                .setMessage("${e.message ?: "Die Datei ist beschädigt oder ungültig."}\n\nDeine Daten wurden nicht verändert.")
                 .setPositiveButton("OK", null)
                 .show()
         }
