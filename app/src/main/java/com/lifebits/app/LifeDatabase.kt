@@ -167,6 +167,33 @@ class LifeDatabase(context: Context) : SQLiteOpenHelper(context.applicationConte
         return counts
     }
 
+    /** Counts for a date interval [start, endExclusive); ISO dates sort lexically. */
+    @Synchronized fun countsBetween(start: String, endExclusive: String): Map<Long, Int> {
+        val result = mutableMapOf<Long, Int>()
+        readableDatabase.rawQuery(
+            "SELECT tracker_id, COUNT(*) FROM events WHERE event_date >= ? AND event_date < ? GROUP BY tracker_id",
+            arrayOf(start, endExclusive)
+        ).use { c ->
+            while (c.moveToNext()) result[c.getLong(0)] = c.getInt(1)
+        }
+        return result
+    }
+
+    @Synchronized fun daysWithEventsBetween(start: String, endExclusive: String): Int =
+        readableDatabase.rawQuery(
+            "SELECT COUNT(DISTINCT event_date) FROM events WHERE event_date >= ? AND event_date < ?",
+            arrayOf(start, endExclusive)
+        ).use { c -> if (c.moveToFirst()) c.getInt(0) else 0 }
+
+    @Synchronized fun monthlyCounts(year: Int): Map<Int, Int> {
+        val result = mutableMapOf<Int, Int>()
+        readableDatabase.rawQuery(
+            "SELECT CAST(substr(event_date,6,2) AS INTEGER), COUNT(*) FROM events WHERE event_date >= ? AND event_date < ? GROUP BY substr(event_date,6,2)",
+            arrayOf(LocalDate.of(year,1,1).toString(), LocalDate.of(year+1,1,1).toString())
+        ).use { c -> while (c.moveToNext()) result[c.getInt(0)] = c.getInt(1) }
+        return result
+    }
+
     @Synchronized fun daysInMonth(month: String): Set<String> {
         val days = mutableSetOf<String>()
         readableDatabase.rawQuery(
