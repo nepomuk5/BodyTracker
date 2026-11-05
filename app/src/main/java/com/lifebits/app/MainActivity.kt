@@ -42,6 +42,9 @@ class MainActivity : Activity() {
     private lateinit var content: LinearLayout
     private var lastDeleted: LifeEntry? = null
     private var previewWide = false
+    private var showingStats = false
+    private var statsYear = LocalDate.now().year
+    private var statsMonth: Int? = null
     private var launchAffirmation = Affirmations.random()
 
     private fun dp(value: Int) = UiKit.dp(this, value)
@@ -250,7 +253,17 @@ class MainActivity : Activity() {
         Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).format(timeFormat)
 
     private fun renderHistory() {
-        title("♡ VERLAUF", "Kalender & Einträge bearbeiten")
+        title("♡ VERLAUF", if (showingStats) "Deine Life Bits in Zahlen" else "Kalender & Einträge bearbeiten")
+        content.addView(UiKit.button(this,
+            if (showingStats) "♡ ZUM KALENDER" else "▦ MONATS- & JAHRESSTATS", {
+                showingStats = !showingStats
+                draw()
+            }, filled = false))
+        content.addView(UiKit.gap(this, 12))
+        if (showingStats) {
+            renderStats()
+            return
+        }
         val nav = UiKit.box(this, vertical = false, fill = "#FFF9FC", pad = 8)
         nav.gravity = Gravity.CENTER_VERTICAL
         nav.addView(UiKit.button(this, "‹", { month = month.minusMonths(1); chosenDay = month.atDay(1); draw() }, false))
