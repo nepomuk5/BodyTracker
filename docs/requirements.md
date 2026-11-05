@@ -1,6 +1,6 @@
 # Produktspezifikation — Random Life Stats
 
-**Stand:** 05.11.2026 · **Prototyp:** 0.4.0-dev (auf main; Widget und Statistik-Grundansicht auf Samsung erprobt) · **Zielplattform:** Android (native Kotlin-App, minSdk 26)
+**Stand:** 05.11.2026 · **Prototyp:** 0.4.1-dev (Icon-Feature-Branch; Samsung-Test offen) (auf main; Widget und Statistik-Grundansicht auf Samsung erprobt) · **Zielplattform:** Android (native Kotlin-App, minSdk 26)
 
 Dieses Dokument ist die **verbindliche fachliche Spezifikation**. Der Status unterscheidet Implementierung von tatsächlicher Abnahme. Ein erfolgreicher CI-Build ersetzt keinen Widget-/Gerätetest.
 
@@ -39,7 +39,7 @@ Unkompliziert und diskret erfassen, **an welchem Tag und wie häufig** kleine, u
 | RLS-016 | Direkte Löschaktion in Eventliste mit Undo | Implementiert | Ursprungsdaten inklusive `recorded_at` wiederherstellen |
 | RLS-017 | Zukünftige Ereignistage verhindern | Implementiert | Navigation darf Zukunft zeigen, Erfassung dort gesperrt |
 | RLS-018 | JSON-Backup exportieren/importieren | Implementiert, **noch nicht abgenommen** | Gültiges Backup, Abbruch, defekte Datei, vollständiger Restore |
-| RLS-019 | Einheitliche zusätzliche Soft-Emoji-Cutie-Icons für eigene Tracker | **Offen** | Entwurf, Größenvergleich und Icon-Keys/Migration |
+| RLS-019 | Einheitliche zusätzliche Soft-Emoji-Cutie-Icons für eigene Tracker | Im Feature-Branch implementiert, **Gerätetest offen** | 13 freigegebene Motive; gespeicherte Icon-Keys, Picker und Widget testen |
 | RLS-020 | Monats- und Jahresübersichten / Statistiken | Grundansicht auf Samsung bestätigt | Detailtests zu historischen/archivierten Daten und spätere Heatmap offen |
 | RLS-021 | Import historischer Nies-Textnotizen | Geplant | Prüfen ohne bestehende Daten zu überschreiben |
 | RLS-022 | Diskretes Undo direkt aus Tracker-Widget | Offene UX-Frage | Keine Konflikte mit Tap/Long-Press des Launchers |
@@ -49,7 +49,7 @@ Unkompliziert und diskret erfassen, **an welchem Tag und wie häufig** kleine, u
 
 - **Heute:** Tageszähler, One-Tap-Buttons, Liste des Tages, Bearbeiten und Löschen; Pep Talk ohne erzwungenen Dialog.
 - **Verlauf:** Kalender vor/zurück, Tag wählen, historische Einträge ansehen und nachtragen; Zukunftseinträge nicht möglich.
-- **Tracker:** Aktivieren, bearbeiten, archivieren und eigene Tracker anlegen. **Custom-Icon-Auswahl ist ein bekanntes Design-Defizit**, nicht freigegeben.
+- **Tracker:** Aktivieren, bearbeiten, archivieren und eigene Tracker anlegen. **Custom-Icons im Soft Emoji Cutie-Stil umgesetzt**, noch nicht auf Samsung überprüft.
 - **Widget Studio:** Instanzen konfigurieren, Reihenfolge, Texte, Zähler, Farbe; tatsächliche Größe im Android-Launcher.
 - **Affirmations:** Optionales, separat hinzufügbares Widget; keine Trackingdaten erforderlich.
 

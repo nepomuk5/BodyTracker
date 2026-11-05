@@ -600,8 +600,8 @@ class MainActivity : Activity() {
         box.addView(UiKit.text(this, "TRACKER-NAME", 13f, true))
         box.addView(input)
         box.addView(UiKit.gap(this, 10))
-        box.addView(UiKit.text(this, "PIXEL-ICON WÄHLEN", 13f, true))
-        val icons = GridLayout(this).apply { columnCount = 5 }
+        box.addView(UiKit.text(this, "SOFT EMOJI ICON WÄHLEN", 13f, true))
+        val icons = GridLayout(this).apply { columnCount = 4 }
         fun highlightIcons() {
             for (i in 0 until icons.childCount) {
                 val child = icons.getChildAt(i)
@@ -616,8 +616,8 @@ class MainActivity : Activity() {
             tile.gravity = Gravity.CENTER
             tile.addView(image)
             tile.setOnClickListener { icon = key; highlightIcons() }
-            icons.addView(tile, GridLayout.LayoutParams(GridLayout.spec(idx / 5), GridLayout.spec(idx % 5)).apply {
-                width = dp(60); height = dp(62); setMargins(dp(1),dp(2),dp(1),dp(2))
+            icons.addView(tile, GridLayout.LayoutParams(GridLayout.spec(idx / 4), GridLayout.spec(idx % 4)).apply {
+                width = dp(62); height = dp(64); setMargins(dp(1),dp(2),dp(1),dp(2))
             })
         }
         highlightIcons()

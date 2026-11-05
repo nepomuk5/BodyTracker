@@ -10,7 +10,7 @@
 
 ## Danach — Design und Usability
 
-4. **P1 — Eigene Tracker + einheitliche Soft Emoji Cutie Icons:** **#11**. Funktion beibehalten; 13 zusätzliche Motive für die vorhandenen stabilen Icon-Keys in genau demselben Stil erstellen. Bis dahin alte Icons nur als Übergang; historische Einträge/Keys schützen.
+4. **P1 — Eigene Tracker + einheitliche Soft Emoji Cutie Icons:** **#11**. Funktion beibehalten; 13 zusätzliche **freigegebene** Motive für die vorhandenen stabilen Icon-Keys im Branch `feat/soft-cutie-custom-icons` eingebunden; vor Merge im Emulator/Samsung prüfen. Alte Ressourcen bleiben zur Kompatibilität erhalten.
 5. **P1 — Widget-Fehleingaben rückgängig:** **#5**. Keine implizite Doppeltipp-Logik und keine Long-Press-Geste, die mit dem Launcher kollidiert.
 6. **P1 — Funktionale Regression prüfen:** **#2 (kompaktes Widget), #3 (Default-Icon-Design) und #8 (Affirmations)** sind erledigt und geschlossen. **#4 (Einträge/Verlauf) und #7 (Widget Studio)** bleiben zur finalen Geräte-Abnahme offen.
 

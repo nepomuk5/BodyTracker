@@ -9,20 +9,23 @@ object PixelIcons {
         "hiccup" to R.drawable.cutie_hiccup,
         "throat" to R.drawable.cutie_throat,
         "alcohol" to R.drawable.cutie_alcohol,
-        "yawn" to R.drawable.pixel_yawn,
-        "cloud" to R.drawable.pixel_cloud,
-        "tear" to R.drawable.pixel_tear,
-        "heart" to R.drawable.pixel_heart,
-        "brain" to R.drawable.pixel_brain,
-        "moon" to R.drawable.pixel_moon,
-        "music" to R.drawable.pixel_music,
-        "star" to R.drawable.pixel_star,
-        "book" to R.drawable.pixel_book,
-        "coffee" to R.drawable.pixel_coffee,
-        "clover" to R.drawable.pixel_clover,
-        "pill" to R.drawable.pixel_pill,
-        "cat" to R.drawable.pixel_cat,
-        "mascot" to R.drawable.soft_mascot
+        "yawn" to R.drawable.cutie_yawn,
+        "cloud" to R.drawable.cutie_cloud,
+        "tear" to R.drawable.cutie_tear,
+        "heart" to R.drawable.cutie_heart,
+        "brain" to R.drawable.cutie_brain,
+        "moon" to R.drawable.cutie_moon,
+        "music" to R.drawable.cutie_music,
+        "star" to R.drawable.cutie_star,
+        "book" to R.drawable.cutie_book,
+        "coffee" to R.drawable.cutie_coffee,
+        "clover" to R.drawable.cutie_clover,
+        "pill" to R.drawable.cutie_pill,
+        "cat" to R.drawable.cutie_cat
     )
-    fun resource(key: String): Int = available[key] ?: R.drawable.pixel_heart
+    // Branding asset stays addressable but is not an option in the custom-tracker picker.
+    fun resource(key: String): Int = when (key) {
+        "mascot" -> R.drawable.soft_mascot
+        else -> available[key] ?: R.drawable.cutie_heart
+    }
 }
