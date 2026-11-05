@@ -34,6 +34,13 @@ events(id PK, tracker_id FK → trackers.id, event_date, event_time NULL, record
 - Widget-Konfiguration liegt in lokalen SharedPreferences, getrennt von der Event-Datenbank.
 - JSON-Backup umfasst Tracker und Events; **Widget-Konfigurationen gehören aktuell nicht zum JSON-Export**. Import ersetzt lokale Tracker/Events nach Validierung in einer Transaktion. Daher vor Import Sicherung erstellen.
 
+## Statistiken (v0.4.0-dev)
+
+- Der Verlauf besitzt eine umschaltbare Monats-/Jahresansicht.
+- `LifeDatabase` aggregiert direkt per SQLite über lokale ISO-Ereignistage (kein Netz, kein Data Warehouse).
+- Monats-/Jahresansicht zählt Ereignisse und unterschiedliche Tage, einschließlich archivierter Tracker mit historischen Daten. `event_time` wird nicht verwendet.
+- Erst nach Emulator- und Samsung-Test als fachlich abgenommen markieren.
+
 ## Android-Widget-Eigenheiten
 
 - Homescreen-Launcher bestimmen tatsächlich verfügbare Zellgrößen und können Widgets nach einem Update verzögert neu layouten.
@@ -41,6 +48,7 @@ events(id PK, tracker_id FK → trackers.id, event_date, event_time NULL, record
 - Tracker-Widgets speichern ohne App-Start über Broadcast-Receiver; keine Bestätigung, Event-Zeit bleibt NULL.
 - Beim Test von geänderten Widget-Mindestgrößen ggf. bestehende Widgets entfernen und neu platzieren (Eventdaten bleiben in SQLite).
 - Affirmations-Widget ist ein anderer Receiver; Sprüche werden lokal ausgewählt und beim Tippen gewechselt.
+- Für Samsung One UI ist im v0.4.0-Branch eine 3×1-Standardgröße und ein **eigenes kompaktes Textlayout** für einzeilige Launcher-Zellen vorgesehen. Größere Widgets behalten Titel, Spruch und Hinweis.
 
 ## Build und Sicherheit
 

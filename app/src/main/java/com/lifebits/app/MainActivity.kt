@@ -42,6 +42,9 @@ class MainActivity : Activity() {
     private lateinit var content: LinearLayout
     private var lastDeleted: LifeEntry? = null
     private var previewWide = false
+    private var showingStats = false
+    private var statsYear = LocalDate.now().year
+    private var statsMonth: Int? = null
     private var launchAffirmation = Affirmations.random()
 
     private fun dp(value: Int) = UiKit.dp(this, value)
@@ -250,7 +253,17 @@ class MainActivity : Activity() {
         Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).format(timeFormat)
 
     private fun renderHistory() {
-        title("♡ VERLAUF", "Kalender & Einträge bearbeiten")
+        title("♡ VERLAUF", if (showingStats) "Deine Life Bits in Zahlen" else "Kalender & Einträge bearbeiten")
+        content.addView(UiKit.button(this,
+            if (showingStats) "♡ ZUM KALENDER" else "▦ MONATS- & JAHRESSTATS", {
+                showingStats = !showingStats
+                draw()
+            }, filled = false))
+        content.addView(UiKit.gap(this, 12))
+        if (showingStats) {
+            renderStats()
+            return
+        }
         val nav = UiKit.box(this, vertical = false, fill = "#FFF9FC", pad = 8)
         nav.gravity = Gravity.CENTER_VERTICAL
         nav.addView(UiKit.button(this, "‹", { month = month.minusMonths(1); chosenDay = month.atDay(1); draw() }, false))
@@ -308,6 +321,89 @@ class MainActivity : Activity() {
         content.addView(UiKit.button(this, "↗ ZU EINEM DATUM SPRINGEN", {
             pickDate(chosenDay) { day -> chosenDay = day; month = YearMonth.from(day); draw() }
         }, filled = false))
+    }
+
+    private fun renderStats() {
+        val yearNav = UiKit.box(this, vertical = false, fill = "#FFF9FC", pad = 8)
+        yearNav.gravity = Gravity.CENTER_VERTICAL
+        yearNav.addView(UiKit.button(this, "‹", {
+            statsYear--; statsMonth = null; draw()
+        }, false))
+        val heading = UiKit.text(this, "$statsYear", 19f, true, pixel = true)
+        heading.gravity = Gravity.CENTER
+        yearNav.addView(heading, LinearLayout.LayoutParams(0, -2, 1f))
+        yearNav.addView(UiKit.button(this, "›", {
+            statsYear++; statsMonth = null; draw()
+        }, false))
+        content.addView(yearNav)
+        content.addView(UiKit.gap(this, 10))
+
+        val monthly = db.monthlyCounts(statsYear)
+        val months = GridLayout(this).apply { columnCount = 3 }
+        for (number in 1..12) {
+            val selected = statsMonth == number
+            val label = YearMonth.of(statsYear, number).month.getDisplayName(TextStyle.SHORT, locale)
+            val tile = UiKit.box(this, fill = if (selected) "#FFC1DF" else "#FFF6FB", pad = 9)
+            tile.gravity = Gravity.CENTER
+            val name = UiKit.text(this, label, 12f, true)
+            name.gravity = Gravity.CENTER
+            tile.addView(name)
+            val count = UiKit.text(this, "${monthly[number] ?: 0} ♡", 14f, true, pixel = true)
+            count.gravity = Gravity.CENTER
+            tile.addView(count)
+            tile.setOnClickListener {
+                statsMonth = if (selected) null else number
+                draw()
+            }
+            months.addView(tile, GridLayout.LayoutParams(
+                GridLayout.spec((number - 1) / 3),
+                GridLayout.spec((number - 1) % 3, 1f)
+            ).apply {
+                width = 0
+                height = dp(65)
+                setMargins(dp(3), dp(3), dp(3), dp(3))
+            })
+        }
+        content.addView(months)
+        content.addView(UiKit.gap(this, 8))
+        content.addView(UiKit.button(this, "GESAMTES JAHR", {
+            statsMonth = null
+            draw()
+        }, filled = false))
+
+        val currentMonth = statsMonth?.let { YearMonth.of(statsYear, it) }
+        val start = currentMonth?.atDay(1) ?: LocalDate.of(statsYear, 1, 1)
+        val end = currentMonth?.plusMonths(1)?.atDay(1) ?: LocalDate.of(statsYear + 1, 1, 1)
+        val counts = db.countsBetween(start.toString(), end.toString())
+        val total = counts.values.sum()
+        val days = db.daysWithEventsBetween(start.toString(), end.toString())
+        val period = currentMonth?.month?.getDisplayName(TextStyle.FULL, locale)
+            ?.let { "$it $statsYear" } ?: "Gesamtjahr $statsYear"
+
+        section(period.uppercase(locale))
+        val summary = UiKit.box(this, fill = "#FFE0F0", pad = 14)
+        summary.addView(UiKit.text(this, "$total Life Bits", 22f, true, pixel = true))
+        summary.addView(UiKit.text(this, "$days Tage mit Einträgen", 12f, muted = true))
+        content.addView(summary)
+
+        section("NACH TRACKER")
+        val trackers = db.trackers(true)
+            .filter { it.active || (counts[it.id] ?: 0) > 0 }
+            .sortedWith(compareByDescending<LifeTracker> { counts[it.id] ?: 0 }
+                .thenBy { it.sortOrder })
+        if (total == 0) {
+            content.addView(UiKit.text(this, "Noch keine Life Bits in diesem Zeitraum ♡", 13f, muted = true))
+        } else {
+            trackers.forEach { t ->
+                val row = UiKit.box(this, vertical = false, fill = "#FFF9FC", pad = 8)
+                row.gravity = Gravity.CENTER_VERTICAL
+                row.addView(UiKit.icon(this, t.icon, 34))
+                row.addView(UiKit.text(this, t.name, 13f, true),
+                    LinearLayout.LayoutParams(0, -2, 1f).apply { marginStart = dp(10) })
+                row.addView(UiKit.text(this, "${counts[t.id] ?: 0}", 16f, true, pixel = true))
+                content.addView(row, UiKit.margin(this, bottom = 5))
+            }
+        }
     }
 
     private fun renderTrackers() {

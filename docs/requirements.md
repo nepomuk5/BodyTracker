@@ -1,6 +1,6 @@
 # Produktspezifikation — Random Life Stats
 
-**Stand:** 05.11.2026 · **Prototyp:** 0.3.1-dev · **Zielplattform:** Android (native Kotlin-App, minSdk 26)
+**Stand:** 05.11.2026 · **Prototyp:** 0.4.0-dev (Feature-Branch; noch nicht auf Samsung getestet) · **Zielplattform:** Android (native Kotlin-App, minSdk 26)
 
 Dieses Dokument ist die **verbindliche fachliche Spezifikation**. Der Status unterscheidet Implementierung von tatsächlicher Abnahme. Ein erfolgreicher CI-Build ersetzt keinen Widget-/Gerätetest.
 
@@ -34,15 +34,16 @@ Unkompliziert und diskret erfassen, **an welchem Tag und wie häufig** kleine, u
 | RLS-011 | Verlauf, Bearbeitung, Nachtrag, Löschen | Implementiert | In-App-Löschen mit Undo; Backup/History prüfen |
 | RLS-012 | Pastellrosa Modern Pixel Cutie UI | Gestalterisch umgesetzt | Tracker-Motive **Soft Emoji Cutie**; kleine Displays prüfen |
 | RLS-013 | Eigenständiger Daily Pep Talk beim App-Start | Implementiert | Zufällige, offline gespeicherte Sprüche; nicht modal |
-| RLS-014 | Separates Affirmations-Homescreen-Widget | Implementiert, Emulator erprobt | Tap wechselt Spruch, Unabhängigkeit vom Tracker |
+| RLS-014 | Separates Affirmations-Homescreen-Widget | Implementiert; Samsung-Sizing-Fix im Feature-Branch | Eine Zeile (3×1) und größere Größe auf Samsung testen |
 | RLS-015 | Breites kompaktes 4×1-Widget | Implementiert, Emulator bestätigt | 1-Zeilen-Größe durch Nutzerin im Launcher bestätigt |
 | RLS-016 | Direkte Löschaktion in Eventliste mit Undo | Implementiert | Ursprungsdaten inklusive `recorded_at` wiederherstellen |
 | RLS-017 | Zukünftige Ereignistage verhindern | Implementiert | Navigation darf Zukunft zeigen, Erfassung dort gesperrt |
 | RLS-018 | JSON-Backup exportieren/importieren | Implementiert, **noch nicht abgenommen** | Gültiges Backup, Abbruch, defekte Datei, vollständiger Restore |
 | RLS-019 | Einheitliche zusätzliche Soft-Emoji-Cutie-Icons für eigene Tracker | **Offen** | Entwurf, Größenvergleich und Icon-Keys/Migration |
-| RLS-020 | Monats- und Jahresübersichten / Statistiken | Geplant | Zähler, Kalender-/Heatmap-Ansicht |
+| RLS-020 | Monats- und Jahresübersichten / Statistiken | In 0.4.0-dev implementiert, QA offen | Zähler, Kalender-/Heatmap-Ansicht |
 | RLS-021 | Import historischer Nies-Textnotizen | Geplant | Prüfen ohne bestehende Daten zu überschreiben |
 | RLS-022 | Diskretes Undo direkt aus Tracker-Widget | Offene UX-Frage | Keine Konflikte mit Tap/Long-Press des Launchers |
+| RLS-023 | Monats-/Jahresstatistiken im Verlauf | In 0.4.0-dev implementiert, noch nicht manuell getestet | Jahreswahl, 12 Monate, Gesamtzahl, Erfassungstage, Tracker-Summen, Archivdaten |
 
 ## Navigation und Bedienung
 
