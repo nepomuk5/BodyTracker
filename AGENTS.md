@@ -1,20 +1,24 @@
 # Random Life Stats / BodyTracker — Regeln für Coding-Agents
 
-**Quelle der Wahrheit:** Dieses Repository. Product Ownerin: Julia. Änderungen per Branch + Pull Request; kein stilles Überschreiben von main.
+**Quelle der Wahrheit:** `docs/requirements.md` für Produktverhalten, `docs/DECISIONS.md` für gewählte Lösungen, `docs/architecture.md` für technische Grenzen. Product Ownerin: Julia.
 
-## Produktvertrag
-- Native Kotlin-Android-App, offline und ohne Konto; primärer Anwendungsfall: One-Tap-Ereignistracking auf dem Android-Homescreen.
-- **Genau sieben** Default-Tracker: Niesen, Kacka, Migräne, Kotzen, Schluckauf, Halsschmerzen, Alkohol. Keine weiteren automatisch anlegen.
-- Jeder Tap = ein eigener Datensatz, auch mehrfach pro Tag. App- und Widget-Taps benötigen keinen Bestätigungsdialog.
-- Getrennte Zeitfelder: `event_date` = Ereignistag, anfänglich lokal heute; `event_time` = **NULL/unbekannt** bis expliziter Nachtrag; `recorded_at` = unveränderlicher automatischer Erfassungszeitpunkt.
-- Mehrere unabhängige Widgets mit frei wählbaren Trackern, Sortierung, Themes und optional nur Icons (diskret ohne Namen); Tageszahlen optional.
-- Niemals bestehende Datensätze beim Archivieren/Update heimlich löschen.
-- Design: **Modern Pixel Cutie** — pastelrosa, lila, creme, klare kleine Pixel-Sticker-Icons; zugänglich/lesbar.
-- Monats-/Jahresstatistiken, Import alter Textnotizen und Bulk-Nachtrag später.
-- Keine privaten Trackingdaten ins Repository, keine Analytics, Cloud, Berechtigungen oder medizinischen Aussagen ohne Zustimmung.
+## Nicht verhandelbarer Produktvertrag
 
-## Entwicklung
-- Vor Eingriffen `docs/requirements.md`, `docs/EMULATOR.md` und `README.md` lesen.
-- Erst vorhandenen v0.2-Quellcode importieren, Gradle-Sync/Compile und Emulator-Smoke-Test herstellen; keine unbeauftragte Architektur-Neuschreibung.
-- Fachliche Änderung -> Anforderungen aktualisieren, Tests ergänzen, PR mit Teststatus.
-- Unterscheide Mockups, statische Prüfungen, erfolgreichen Build, Emulator-Test und echten Gerätetest sauber.
+- Native Kotlin-Android-App, offline, ohne Account, Analytics oder Cloud.
+- Sieben automatische Default-Tracker **und keine weiteren**: Niesen, Kacka, Migräne, Kotzen, Schluckauf, Halsschmerzen, Alkohol.
+- Ein Tap = ein Ereignis. Pro Tag beliebig viele Ereignisse, kein Bestätigungsdialog bei App-/Widget-Taps.
+- `event_date` = Ereignistag (standardmäßig heute); `event_time` = **NULL/unbekannt** bis explizite Eingabe; `recorded_at` = unveränderlicher automatischer Erfassungszeitpunkt.
+- Keine Einträge in zukünftige Tage als bereits geschehene Ereignisse.
+- Unabhängige konfigurierbare Widgets (Tracker-Auswahl/-Sortierung, diskrete Icon-only-Ansicht, Zähler, Themes); Änderung von Größe darf keine Events verlieren.
+- Bereits gespeicherte Einträge und Custom-Tracker auch bei Designänderung, Archivierung oder App-Update erhalten. Icon-Keys niemals unvorbereitet löschen.
+- Pastellrosa **Modern Pixel Cutie**-UI, sieben Standardmotive **Soft Emoji Cutie**. Legacy-Pixelbilder für eigene Tracker sind ein **offener UX-Mangel**, nicht Designvorlage.
+- Affirmations als optionaler rein lokaler Spaßfaktor, keine medizinischen Ratschläge.
+- Keine privaten Trackingdaten/JSON-Backups/DB-Dateien/Signing Keys committen.
+
+## Workflow
+
+- Auf `main` liegt der integrierte Entwicklungsstand. Änderung per neuem Feature-Branch + PR; keine unaufgeforderten großen Umbauten.
+- Vor Änderung: README, Anforderungen, Architektur und Backlog prüfen.
+- Fachliche Änderung → Requirements/Decision Log aktualisieren und Tests/PR-Nachweis ergänzen.
+- Klar trennen: Mockup, kompilierter Code, Emulator-Test, echter Gerätetest, Release.
+- Bestehende JSON-Backups und DB-Migrationen schützen; jede Migration mit Altbeständen prüfen.

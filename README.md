@@ -1,27 +1,54 @@
-# 🎀 Random Life Stats / BodyTracker
+# 🎀 Random Life Stats (BodyTracker)
 
-Native Android-App für **One-Tap-Tracking** persönlicher, seltener Alltagsereignisse. Ziel: diskrete, individuelle Android-Homescreen-Widgets und eine rosa/pastellige **Modern Pixel Cutie**-Oberfläche.
+**Native Android-App für One-Tap-Tracking von seltenen kleinen Alltagsereignissen.** Offline, ohne Account und ohne Cloud-Synchronisierung. Eigene Homescreen-Widgets machen das Erfassen mit nur einem Tipp möglich.
 
-**Status:** Projekt- und Emulator-Setup ist in diesem Branch vorbereitet; die bestehenden v0.2-Android-Quelldateien/Pixel-Assets müssen noch vollständig importiert werden. **Noch kein bestätigter Android-Build.**
+**Projektstatus (05.11.2026):** Android-Prototyp **v0.3.1-dev** erfolgreich gebaut und auf einem Android-Emulator ausprobiert. Tracker-Widget und Daily-Pep-Talk-Widget funktionieren im Emulator. **Ein Test auf einem echten Android-Gerät und ein Release sind noch offen.** Die App wird bislang als Debug-APK installiert; noch keine Play-Store-Veröffentlichung.
 
-## Einstieg am Windows-PC
+## Features im aktuellen Prototyp
 
-1. Android Studio von https://developer.android.com/studio installieren.
-2. Den GitHub-Branch `chore/android-project-emulator-setup` lokal klonen/auschecken.
-3. Vorhandenes vollständiges v0.2-Projekt aus dem vorbereiteten Quellcodearchiv in die Repository-Wurzel übernehmen (ohne `.git/` zu löschen). Die Quelldateien sollten `app/`, `settings.gradle.kts`, `build.gradle.kts`, `gradle.properties` und `app/src/main/res/` enthalten.
-4. Repository-Hauptordner mit Android Studio öffnen, Gradle Sync ausführen und `app` starten.
-5. Virtuelles Pixel-Smartphone im Device Manager anlegen; Emulator starten, App mit ▶ ausführen und Widget auf den virtuellen Homescreen ziehen.
+- Sieben Start-Tracker: **Niesen, Kacka, Migräne, Kotzen, Schluckauf, Halsschmerzen, Alkohol**.
+- Ein Tap = ein Ereignis. Mehrere Ereignisse am selben Tag sind erlaubt.
+- `event_date` ist standardmäßig der heutige Tag; `event_time` bleibt **NULL/unbekannt**; `recorded_at` speichert den separaten Erfassungszeitpunkt.
+- Verlauf mit Kalender, Bearbeitung, Nachtrag, Löschen und schnellem Undo in der App.
+- Mehrere unabhängig konfigurierbare Tracker-Widgets (Buttons, Reihenfolge, Beschriftung, Zähler, Farbe); kompakte 4×1- und 2×2-Layouts.
+- Lokaler JSON-Export und -Import; Wiederherstellung ist noch vertieft zu testen.
+- Zufälliger **Daily Pep Talk** in der App sowie ein eigenes optionales Affirmations-Widget.
+- **Soft Emoji Cutie** für die sieben Standardtracker; die **zusätzliche Icon-Auswahl für eigene Tracker ist noch nicht überarbeitet**.
 
-Eine detaillierte bebilderungsunabhängige Anleitung findest du unter **[docs/EMULATOR.md](docs/EMULATOR.md)**. Die Produktanforderungen sind in **[docs/requirements.md](docs/requirements.md)**, Codex-Regeln in **[AGENTS.md](AGENTS.md)** und die nächsten Schritte in **[docs/backlog.md](docs/backlog.md)**.
+## Einstieg (Windows + Android Studio)
 
-## Erste Testfälle
+Android Studio mit Android SDK/Emulator verwenden. Repository lokal öffnen und im Root-Verzeichnis:
 
-- Sieben Start-Tracker: Niesen, Kacka, Migräne, Kotzen, Schluckauf, Halsschmerzen, Alkohol.
-- Jeder Tap erzeugt genau einen Eintrag für den Ereignistag (standardmäßig heute).
-- **`event_time` bleibt NULL**, während `recorded_at` separat gesetzt wird.
-- Zwei konfigurierbare Widgets dürfen sich unterscheiden; diskreter Icon-only-Modus.
-- Nach Emulator-Neustart bleiben Einträge erhalten.
+```powershell
+.\gradlew.bat :app:assembleDebug
+```
 
-GitHub Actions (`.github/workflows/android-debug.yml`) erstellt nach vollständigem Import und erfolgreichem Android-Compile eine Debug-APK. Bis dahin kann der Workflow beim fehlenden App-Code bewusst fehlschlagen.
+Die Debug-APK liegt anschließend unter `app/build/outputs/apk/debug/app-debug.apk`.
 
-**Privatsphäre:** Keine echten Gesundheits-/Trackingdaten, Datenbankdateien oder privaten Backups ins GitHub-Repository committen.
+Mit gestartetem Emulator **oder angeschlossenem Android-Gerät mit USB-Debugging** installieren:
+
+```powershell
+& "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" devices
+& "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" install -r ".\app\build\outputs\apk\debug\app-debug.apk"
+```
+
+`install -r` aktualisiert die installierte Debug-App bei gleicher Signatur, ohne die App-Daten absichtlich zu löschen. **Nicht deinstallieren**, wenn die lokalen Testdaten bleiben sollen. Vor Experimenten ein JSON-Backup exportieren.
+
+## Projektübersicht
+
+| Pfad | Inhalt |
+|---|---|
+| `app/` | Kotlin-Quellcode, SQLite, Views, Android-Widgets, Icons und AndroidManifest |
+| `design/` | Designreferenzen und Icon-Quelldateien |
+| `docs/requirements.md` | **Verbindliche Produktspezifikation** mit Status |
+| `docs/architecture.md` | Architektur, Persistenz und wichtige technische Grenzen |
+| `docs/backlog.md` | Prioritäten, offene Entscheidungen und GitHub-Issues |
+| `docs/EMULATOR.md` | Emulator- und Geräte-Testablauf |
+| `docs/DECISIONS.md` | Getroffene Produkt- und Designentscheidungen |
+| `docs/ux-test-01.md` | Historische Think-Aloud-Testauswertung |
+| `AGENTS.md` | Verbindliche Entwicklungsregeln für Coding-Agents |
+| `.github/workflows/android-debug.yml` | Automatischer Debug-APK-Build auf GitHub |
+
+**Arbeitsweise:** `main` ist der Integrationsstand. Neue Änderungen in separaten Feature-Branches mit Pull Request; dokumentierte Anforderungen und Build-/Teststatus müssen aktualisiert werden.
+
+**Datenschutz:** Keine echten Trackingdaten, Sicherungsdateien, Datenbanken, lokale SDK-Pfade, Schlüssel oder privaten Daten in GitHub committen.

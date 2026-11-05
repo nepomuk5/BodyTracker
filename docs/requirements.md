@@ -1,20 +1,60 @@
-# Random Life Stats — MVP-Anforderungen
+# Produktspezifikation — Random Life Stats
 
-| ID | Anforderung | Abnahme |
-|---|---|---|
-| RLS-001 | Ein Tippen in App/Widget erzeugt ein Ereignis ohne Öffnen eines Dialogs. | Genau ein Datensatz, auch bei geschlossenem App-Fenster |
-| RLS-002 | Mehrere Ereignisse pro Tag bleiben getrennt. | Drei Taps = drei Einträge, Zähler 3 |
-| RLS-003 | `event_date` als Ereignistag; editierbar. | Standard lokales Heute, Nachtrag und Datumsänderung möglich |
-| RLS-004 | `event_time` anfänglich NULL, erst durch Nutzer gesetzt. | Klickzeit nie als tatsächliche Ereignisuhrzeit ausgegeben |
-| RLS-005 | `recorded_at` automatisch/immutable. | Bearbeitung lässt Erfassungszeit unverändert |
-| RLS-006 | Starter-Tracker exakt sieben. | Niesen, Kacka, Migräne, Kotzen, Schluckauf, Halsschmerzen, Alkohol |
-| RLS-007 | Tracker individuell anlegen/archivieren; alte Daten behalten. | Auch nach Archivierung noch im Verlauf |
-| RLS-008 | Android-Homescreen-Widgets, mehrfach und unabhängig. | Unterschiedliche Tracker-Konfiguration je Instanz |
-| RLS-009 | Diskretes Widget ohne Labels. | Icon-only, Zähler und Farbe je Widget separat |
-| RLS-010 | Lokale Persistenz offline. | Einträge bleiben nach App-/Emulator-Neustart |
-| RLS-011 | Verlauf: korrigieren/löschen/nachtragen. | Nutzer kann Datum/Uhrzeit nachträglich pflegen |
-| RLS-012 | Visuelle Richtung Modern Pixel Cutie. | Eigene klare Pixel-Icons, rosa/lila/creme |
+**Stand:** 05.11.2026 · **Prototyp:** 0.3.1-dev · **Zielplattform:** Android (native Kotlin-App, minSdk 26)
 
-Später: Jahres- und Monatsübersichten, Statistik-Heatmap, Import der Nies-Textnotizen, Mehrfacheintrag per +N. Keine künstlichen Erinnerungen/Habit-Scoring.
+Dieses Dokument ist die **verbindliche fachliche Spezifikation**. Der Status unterscheidet Implementierung von tatsächlicher Abnahme. Ein erfolgreicher CI-Build ersetzt keinen Widget-/Gerätetest.
 
-**Release-Gate:** Android-Build in CI erfolgreich UND manuelle One-Tap/Widget-Tests im Android Emulator (siehe `docs/EMULATOR.md`) erfolgreich. Vorher kein Anspruch auf funktionsfähige APK.
+## Produktziel
+
+Unkompliziert und diskret erfassen, **an welchem Tag und wie häufig** kleine, ungewöhnliche Körper- und Alltagsereignisse passiert sind. Der Primärweg ist ein Homescreen-Widget ohne App-Start. Kein Habit-Score, keine Streak-Pflicht und keine medizinischen Empfehlungen.
+
+## Verbindliche Regeln
+
+- **Ein Tap erzeugt genau einen Datensatz**, auch bei mehreren Taps am selben Tag.
+- **`event_date`:** tatsächlicher Ereignistag; bei Soforterfassung lokales Heute, nachträglich editierbar.
+- **`event_time`:** tatsächliche Uhrzeit, nach einem Tap **immer NULL**, bis die Nutzerin explizit eine Zeit einträgt.
+- **`recorded_at`:** separater automatisch erfasster Zeitstempel; normale Bearbeitung ändert ihn nicht.
+- **Keine rückwirkende Ableitung** von `event_time` aus `recorded_at`. Keine Ereigniserfassung in der Zukunft.
+- Persönliche Daten bleiben lokal; Tracker-Archivierung und App-Updates dürfen Ereignisse nicht löschen.
+
+## Anforderungen & Abnahme
+
+| ID | Anforderung | Status (05.11.) | Nachweis / offener Test |
+|---|---|---|---|
+| RLS-001 | One-Tap-Erfassung in App und Widget | Implementiert, Emulator erprobt | Pro Tap genau eine Zeile; auf echtem Gerät offen |
+| RLS-002 | Mehrere Ereignisse pro Tag | Implementiert, Emulator erprobt | Drei Taps = drei Einträge |
+| RLS-003 | Ereignistag standardmäßig heute, editierbar | Implementiert | Vergangene Tage / Datumsänderung prüfen |
+| RLS-004 | Tatsächliche Ereignisuhrzeit zunächst NULL | Implementiert | Auch Widget-/Nachtrags-Flow gezielt prüfen |
+| RLS-005 | Automatischer `recorded_at` separat und unverändert | Implementiert | Auch Undo, Backup-Roundtrip prüfen |
+| RLS-006 | Exakt sieben Starter | Implementiert | Niesen, Kacka, Migräne, Kotzen, Schluckauf, Halsschmerzen, Alkohol |
+| RLS-007 | Tracker erstellen, bearbeiten und archivieren | Funktional implementiert; UX nicht final | Zusätzliche Icons sind noch alte Pixelgrafiken |
+| RLS-008 | Mehrere unabhängige Tracker-Widgets | Implementiert, Emulator erprobt | Zwei Instanzen/Neustart auf echtem Gerät prüfen |
+| RLS-009 | Diskretes Widget, Label/Zähler/Theme optional | Implementiert | Rosa/Lila/Creme, 4×1 und 2×2 prüfen |
+| RLS-010 | Offline & lokale Datenpersistenz | Implementiert | Neustart/Update/Backup im Gerätetest |
+| RLS-011 | Verlauf, Bearbeitung, Nachtrag, Löschen | Implementiert | In-App-Löschen mit Undo; Backup/History prüfen |
+| RLS-012 | Pastellrosa Modern Pixel Cutie UI | Gestalterisch umgesetzt | Tracker-Motive **Soft Emoji Cutie**; kleine Displays prüfen |
+| RLS-013 | Eigenständiger Daily Pep Talk beim App-Start | Implementiert | Zufällige, offline gespeicherte Sprüche; nicht modal |
+| RLS-014 | Separates Affirmations-Homescreen-Widget | Implementiert, Emulator erprobt | Tap wechselt Spruch, Unabhängigkeit vom Tracker |
+| RLS-015 | Breites kompaktes 4×1-Widget | Implementiert, Emulator bestätigt | 1-Zeilen-Größe durch Nutzerin im Launcher bestätigt |
+| RLS-016 | Direkte Löschaktion in Eventliste mit Undo | Implementiert | Ursprungsdaten inklusive `recorded_at` wiederherstellen |
+| RLS-017 | Zukünftige Ereignistage verhindern | Implementiert | Navigation darf Zukunft zeigen, Erfassung dort gesperrt |
+| RLS-018 | JSON-Backup exportieren/importieren | Implementiert, **noch nicht abgenommen** | Gültiges Backup, Abbruch, defekte Datei, vollständiger Restore |
+| RLS-019 | Einheitliche zusätzliche Soft-Emoji-Cutie-Icons für eigene Tracker | **Offen** | Entwurf, Größenvergleich und Icon-Keys/Migration |
+| RLS-020 | Monats- und Jahresübersichten / Statistiken | Geplant | Zähler, Kalender-/Heatmap-Ansicht |
+| RLS-021 | Import historischer Nies-Textnotizen | Geplant | Prüfen ohne bestehende Daten zu überschreiben |
+| RLS-022 | Diskretes Undo direkt aus Tracker-Widget | Offene UX-Frage | Keine Konflikte mit Tap/Long-Press des Launchers |
+
+## Navigation und Bedienung
+
+- **Heute:** Tageszähler, One-Tap-Buttons, Liste des Tages, Bearbeiten und Löschen; Pep Talk ohne erzwungenen Dialog.
+- **Verlauf:** Kalender vor/zurück, Tag wählen, historische Einträge ansehen und nachtragen; Zukunftseinträge nicht möglich.
+- **Tracker:** Aktivieren, bearbeiten, archivieren und eigene Tracker anlegen. **Custom-Icon-Auswahl ist ein bekanntes Design-Defizit**, nicht freigegeben.
+- **Widget Studio:** Instanzen konfigurieren, Reihenfolge, Texte, Zähler, Farbe; tatsächliche Größe im Android-Launcher.
+- **Affirmations:** Optionales, separat hinzufügbares Widget; keine Trackingdaten erforderlich.
+
+## Release-Gates
+
+1. `./gradlew :app:assembleDebug` (Windows: `gradlew.bat`) und GitHub Actions erfolgreich.
+2. Emulator: One-Tap-Logik, Datum/Uhrzeit, Widget-Resize und -Konfiguration, Undo, Offline-/Neustart-Test.
+3. **Echtes Android-Gerät:** Installation, Launcher-Widgets, Tageswechsel, Datenerhalt nach Update, Backup-/Restore-Probe.
+4. Vor allgemeiner Weitergabe: Release-Signierung, Datenschutzprüfung, sinnvolle Versionsnummer, ggf. separates Release-APK; **Debug-APK ist kein veröffentlichungsfertiger Release-Build**.
