@@ -666,44 +666,125 @@ class MainActivity : Activity() {
     }
 
     private fun importBackup() {
-        val i = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-            addCategory(Intent.CATEGORY_OPENABLE)
-            type = "application/json"
+        AlertDialog.Builder(this)
+            .setTitle("Backup auswählen")
+            .setMessage(
+                "Im nächsten Schritt öffnet Android die Dateiauswahl. " +
+                "Mit Zurück kannst du jederzeit abbrechen. " +
+                "Nur die Auswahl einer Datei ändert noch keine Einträge. ♡"
+            )
+            .setNegativeButton("Abbrechen", null)
+            .setPositiveButton("DATEI AUSWÄHLEN") { _, _ ->
+                val i = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "application/json"
+                }
+                startActivityForResult(i, 302)
+            }.show()
+    }
+
+    /**
+     * Read a document from Android's Storage Access Framework with a strict byte limit.
+     * Never call readText() directly on an untrusted content Uri: that could allocate
+     * arbitrarily large data before the old length check ran.
+     */
+    private fun readBackupText(uri: Uri): String {
+        val maxBytes = 15_000_000
+        val input = contentResolver.openInputStream(uri)
+            ?: error("Datei konnte nicht geöffnet werden")
+        return input.use { stream ->
+            val output = java.io.ByteArrayOutputStream()
+            val chunk = ByteArray(8192)
+            while (true) {
+                val read = stream.read(chunk)
+                if (read == -1) break
+                if (read == 0) continue
+                require(output.size().toLong() + read <= maxBytes.toLong()) {
+                    "Backup ist zu groß (max. 15 MB)"
+                }
+                output.write(chunk, 0, read)
+            }
+            output.toString(Charsets.UTF_8.name())
         }
-        startActivityForResult(i, 302)
+    }
+
+    private fun restoreBackupPreview(uri: Uri) {
+        try {
+            // Parsing and validating a document is read-only.
+            val raw = readBackupText(uri)
+            val summary = db.inspectBackup(raw)
+            val currentTrackerCount = db.trackers(true).size
+            val currentEventCount = db.eventCount()
+            val dateInfo = if (summary.earliestDate != null) {
+                "\\nZeitraum: ${summary.earliestDate} bis ${summary.latestDate}"
+            } else ""
+            val message =
+                "AUSGEWÄHLTE SICHERUNG\\n" +
+                "${summary.trackerCount} Tracker · ${summary.eventCount} Ereignisse" +
+                dateInfo + "\\n\\n" +
+                "AKTUELL AUF DIESEM HANDY\\n" +
+                "$currentTrackerCount Tracker · $currentEventCount Ereignisse\\n\\n" +
+                "ACHTUNG: Wiederherstellen ERSETZT alle aktuellen Tracker und " +
+                "Einträge. Widget-Einstellungen sind nicht Teil der JSON-Datei. " +
+                "Bitte nur mit einer zuvor geprüften Sicherung fortfahren."
+            AlertDialog.Builder(this)
+                .setTitle("Backup geprüft ♡")
+                .setMessage(message)
+                .setNegativeButton("NICHT ERSETZEN", null)
+                .setPositiveButton("ALLES ERSETZEN") { _, _ ->
+                    try {
+                        // A second validation and an SQL transaction protect against
+                        // partially imported files and duplicate references.
+                        db.importJson(raw)
+                        lastDeleted = null
+                        LifeWidgetProvider.updateAll(this)
+                        draw()
+                        Toast.makeText(this,
+                            "${summary.eventCount} Einträge wiederhergestellt ♡",
+                            Toast.LENGTH_LONG).show()
+                    } catch (e: Exception) {
+                        Toast.makeText(this,
+                            "Wiederherstellung fehlgeschlagen. Vorherige Daten bleiben erhalten: ${e.message}",
+                            Toast.LENGTH_LONG).show()
+                    }
+                }.show()
+        } catch (e: Exception) {
+            AlertDialog.Builder(this)
+                .setTitle("Backup nicht verwendbar")
+                .setMessage("${e.message ?: "Die Datei ist beschädigt oder ungültig."}\\n\\nDeine Daten wurden nicht verändert.")
+                .setPositiveButton("OK", null)
+                .show()
+        }
     }
 
     @Deprecated("Uses platform activity-result API so no extra dependencies are needed")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode != RESULT_OK) return
-        val uri: Uri = data?.data ?: return
+        if (requestCode !in listOf(301, 302)) return
+        if (resultCode != RESULT_OK || data?.data == null) {
+            Toast.makeText(this, "Dateiauswahl abgebrochen – alles unverändert ♡", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val uri: Uri = data.data!!
         if (requestCode == 301) {
             try {
-                contentResolver.openOutputStream(uri)?.use { output ->
-                    output.write(db.exportJson().toByteArray(Charsets.UTF_8))
+                val raw = db.exportJson()
+                val info = db.inspectBackup(raw)
+                contentResolver.openOutputStream(uri, "wt")?.use { output ->
+                    output.write(raw.toByteArray(Charsets.UTF_8))
+                    output.flush()
                 } ?: error("Datei konnte nicht geöffnet werden")
-                Toast.makeText(this, "Backup gespeichert ♡", Toast.LENGTH_LONG).show()
+                Toast.makeText(this,
+                    "Backup gespeichert: ${info.trackerCount} Tracker, ${info.eventCount} Einträge ♡",
+                    Toast.LENGTH_LONG).show()
             } catch (e: Exception) {
-                Toast.makeText(this, "Backup fehlgeschlagen: ${e.message}", Toast.LENGTH_LONG).show()
+                AlertDialog.Builder(this)
+                    .setTitle("Backup nicht erfolgreich")
+                    .setMessage("Bitte prüfe die gewählte Datei und versuche es erneut. ${e.message}")
+                    .setPositiveButton("OK", null).show()
             }
         } else if (requestCode == 302) {
-            AlertDialog.Builder(this)
-                .setTitle("Backup wiederherstellen?")
-                .setMessage("Achtung: Das ersetzt ALLE aktuellen Tracker und Ereignisse durch die Daten aus der ausgewählten Datei.")
-                .setPositiveButton("Wiederherstellen") { _, _ ->
-                    try {
-                        val raw = contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
-                            ?: error("Datei konnte nicht gelesen werden")
-                        require(raw.length < 15_000_000) { "Backup zu groß" }
-                        db.importJson(raw)
-                        LifeWidgetProvider.updateAll(this)
-                        draw()
-                        Toast.makeText(this, "Backup wiederhergestellt ♡", Toast.LENGTH_LONG).show()
-                    } catch (e: Exception) {
-                        Toast.makeText(this, "Import fehlgeschlagen: ${e.message}", Toast.LENGTH_LONG).show()
-                    }
-                }.setNegativeButton("Abbrechen", null).show()
+            restoreBackupPreview(uri)
         }
     }
 }
