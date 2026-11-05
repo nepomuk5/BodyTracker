@@ -16,7 +16,16 @@ import java.time.LocalDate
 data class LifeTracker(val id: Long, val name: String, val icon: String, val active: Boolean, val sortOrder: Int)
 data class LifeEntry(val id: Long, val trackerId: Long, val eventDate: String, val eventTime: String?, val recordedAt: Long)
 
-class LifeDatabase(context: Context) : SQLiteOpenHelper(context.applicationContext, "life_bits.db", null, 2) {
+/** A read-only preview; inspecting a backup must never mutate the database. */
+data class BackupSummary(
+    val trackerCount: Int,
+    val eventCount: Int,
+    val earliestDate: String?,
+    val latestDate: String?
+)
+
+class LifeDatabase(context: Context, databaseName: String = "life_bits.db") :
+    SQLiteOpenHelper(context.applicationContext, databaseName, null, 2) {
     override fun onConfigure(db: SQLiteDatabase) {
         super.onConfigure(db)
         db.setForeignKeyConstraintsEnabled(true)
@@ -218,8 +227,8 @@ class LifeDatabase(context: Context) : SQLiteOpenHelper(context.applicationConte
         return root.toString(2)
     }
 
-    /** Atomic replacement, with validation before any existing data is removed. */
-    @Synchronized fun importJson(json: String) {
+    /** Validate the entire file BEFORE any transaction or confirmation prompt. */
+    @Synchronized fun inspectBackup(json: String): BackupSummary {
         val root = JSONObject(json)
         require(root.optString("format") == "life-bits" && root.optInt("version") == 1) {
             "Keine unterstützte Life Bits Sicherung."
@@ -231,20 +240,45 @@ class LifeDatabase(context: Context) : SQLiteOpenHelper(context.applicationConte
         for (i in 0 until t.length()) {
             val item = t.getJSONObject(i)
             val id = item.getLong("id")
-            require(id > 0 && validIds.add(id) && item.getString("name").isNotBlank()) { "Ungültiger Tracker." }
+            require(id > 0 && validIds.add(id) && item.getString("name").isNotBlank()) {
+                "Ungültiger Tracker."
+            }
+            require(item.getString("icon").isNotBlank()) { "Tracker ohne Icon." }
+            item.getBoolean("active")
+            item.getInt("sortOrder")
         }
         val eventIds = mutableSetOf<Long>()
+        var earliest: String? = null
+        var latest: String? = null
         for (i in 0 until e.length()) {
             val item = e.getJSONObject(i)
-            require(item.getLong("id") > 0 && eventIds.add(item.getLong("id"))) { "Doppelte Ereignis-ID." }
+            val eventId = item.getLong("id")
+            require(eventId > 0 && eventIds.add(eventId)) { "Doppelte Ereignis-ID." }
             require(item.getLong("trackerId") in validIds) { "Eintrag ohne Tracker." }
-            LocalDate.parse(item.getString("eventDate"))
+            val date = LocalDate.parse(item.getString("eventDate")).toString()
+            if (earliest == null || date < earliest) earliest = date
+            if (latest == null || date > latest) latest = date
             if (!item.isNull("eventTime")) {
                 require(Regex("^(?:[01]\\d|2[0-3]):[0-5]\\d$").matches(item.getString("eventTime"))) {
                     "Ungültige Ereignisuhrzeit."
                 }
             }
+            require(item.getLong("recordedAt") >= 0L) { "Ungültige Erfassungszeit." }
         }
+        return BackupSummary(t.length(), e.length(), earliest, latest)
+    }
+
+    /** Number of stored rows, without loading potentially large histories into memory. */
+    @Synchronized fun eventCount(): Int = readableDatabase.rawQuery(
+        "SELECT COUNT(*) FROM events", null
+    ).use { c -> if (c.moveToFirst()) c.getInt(0) else 0 }
+
+    /** Atomic replacement, including a second validation pass immediately before writing. */
+    @Synchronized fun importJson(json: String) {
+        inspectBackup(json)
+        val root = JSONObject(json)
+        val t = root.getJSONArray("trackers")
+        val e = root.getJSONArray("events")
         val db = writableDatabase
         db.beginTransaction()
         try {

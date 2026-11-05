@@ -10,9 +10,10 @@ android {
     defaultConfig {
         applicationId = "com.lifebits.app"
         minSdk = 26
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         targetSdk = 34
-        versionCode = 6
-        versionName = "0.4.1-dev"
+        versionCode = 7
+        versionName = "0.4.2-dev"
     }
 
     compileOptions {
@@ -20,4 +21,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions { jvmTarget = "17" }
+}
+
+
+dependencies {
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test:runner:1.6.2")
 }
