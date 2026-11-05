@@ -276,6 +276,9 @@ class LifeDatabase(context: Context, databaseName: String = "life_bits.db") :
     /** Atomic replacement, including a second validation pass immediately before writing. */
     @Synchronized fun importJson(json: String) {
         inspectBackup(json)
+        val root = JSONObject(json)
+        val t = root.getJSONArray("trackers")
+        val e = root.getJSONArray("events")
         val db = writableDatabase
         db.beginTransaction()
         try {
